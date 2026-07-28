@@ -162,6 +162,10 @@ export default function AuthScreen({ onAuthenticate }) {
               />
             </div>
 
+            <div className="rounded-3xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-3 text-sm text-cyan-200">
+              If you don't receive the OTP within a minute, please check your spam/junk folder and make sure the email is allowed.
+            </div>
+
             {error ? <p className="rounded-3xl bg-rose-500/10 px-4 py-3 text-sm text-rose-300">{error}</p> : null}
             {info ? <p className="rounded-3xl bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200">{info}</p> : null}
 
