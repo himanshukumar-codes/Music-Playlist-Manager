@@ -8,20 +8,10 @@ import FavoritesPage from './pages/FavoritesPage';
 import RecentPage from './pages/RecentPage';
 import PlaylistPage from './pages/PlaylistPage';
 import PlayerBar from './components/PlayerBar';
-import AuthScreen from './components/AuthScreen';
 
 function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [user, setUser] = useState(() => {
-    if (typeof window === 'undefined') return null;
-
-    try {
-      const stored = window.localStorage.getItem('music-playlist-auth');
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,28 +32,6 @@ function App() {
       window.localStorage.removeItem('music-playlist-auth');
     }
   }, [user]);
-
-  const profileName = user?.name || user?.email?.split('@')[0] || 'User';
-  const profileInitial = profileName.charAt(0).toUpperCase();
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef(null);
-
-  useEffect(() => {
-    if (!profileOpen) return;
-
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setProfileOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [profileOpen]);
-
-  if (!user) {
-    return <AuthScreen onAuthenticate={(authenticatedUser) => setUser(authenticatedUser)} />;
-  }
 
   return (
     <WasmProvider>
@@ -94,36 +62,6 @@ function App() {
                   </NavLink>
                 </nav>
 
-                <div className="relative" ref={profileRef}>
-                  <button
-                    type="button"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold text-white shadow-sm transition hover:border-cyan-400/40 hover:bg-white/10"
-                    onClick={() => setProfileOpen((prev) => !prev)}
-                    aria-expanded={profileOpen}
-                    aria-label="Open profile menu"
-                  >
-                    {profileInitial}
-                  </button>
-
-                  {profileOpen ? (
-                    <div className="absolute right-0 z-50 mt-3 w-72 rounded-3xl border border-white/10 bg-slate-950/95 p-4 text-left shadow-2xl shadow-black/40 backdrop-blur-xl">
-                      <p className="text-sm font-semibold text-white">{profileName}</p>
-                      <p className="mt-1 text-xs text-slate-400">{user.email}</p>
-                      <div className="mt-4 border-t border-white/10 pt-4">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setProfileOpen(false);
-                            setUser(null);
-                          }}
-                          className="w-full rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-500 px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110"
-                        >
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
               </div>
             </div>
           </header>

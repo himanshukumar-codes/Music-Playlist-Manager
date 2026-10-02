@@ -111,7 +111,7 @@ export default function HomePage() {
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-cyan-300 sm:text-sm sm:tracking-[0.45em]">MUSIC PLAYLIST MANAGER</p>
-            <p className="mt-1 text-xs text-slate-400">Built by Himanshu Kumar, Salman Khan</p>
+            <p className="mt-1 text-xs text-slate-400">Built by Himanshu Kumar</p>
             <h2 className="mt-2 text-xl font-semibold text-white sm:mt-3 sm:text-2xl md:text-3xl lg:text-4xl">Create, organize, and enjoy your music in one beautiful place.</h2>
             <p className="mt-3 max-w-2xl text-sm text-slate-300 sm:mt-4">Discover your favorite tracks, build custom playlists, manage your music library, and enjoy a smooth listening experience with an elegant, responsive interface.</p>
             <div className="mt-6 flex flex-wrap gap-3">

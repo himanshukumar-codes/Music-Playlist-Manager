@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,10 +49,45 @@ async function sendEmail({ email, subject, text }) {
     return Promise.resolve({ fallback: true });
   }
 
-  const sendgridApiKey = process.env.SENDGRID_API_KEY;
+  const emailProvider = (process.env.EMAIL_PROVIDER || 'sendgrid').trim().toLowerCase();
   const emailUser = process.env.EMAIL_USER;
 
-  if (!sendgridApiKey || !emailUser) {
+  if (!emailUser) {
+    throw new Error('EMAIL_USER must be set in .env');
+  }
+
+  if (emailProvider === 'smtp') {
+    const emailPassword = process.env.EMAIL_PASSWORD;
+    if (!emailPassword) {
+      throw new Error('EMAIL_PASSWORD must be set when EMAIL_PROVIDER=smtp');
+    }
+
+    const smtpPort = Number(process.env.SMTP_PORT || 587);
+    const smtpSecure = process.env.SMTP_SECURE
+      ? process.env.SMTP_SECURE === 'true'
+      : smtpPort === 465;
+    const transporter = nodemailer.createTransport({
+      ...(process.env.SMTP_HOST
+        ? { host: process.env.SMTP_HOST, port: smtpPort, secure: smtpSecure }
+        : { service: process.env.EMAIL_SERVICE || 'gmail' }),
+      auth: { user: emailUser, pass: emailPassword },
+    });
+
+    await transporter.sendMail({
+      from: { name: 'Music Playlist Manager', address: emailUser },
+      to: email,
+      subject,
+      text,
+    });
+    return { success: true };
+  }
+
+  if (emailProvider !== 'sendgrid') {
+    throw new Error('EMAIL_PROVIDER must be either sendgrid or smtp');
+  }
+
+  const sendgridApiKey = process.env.SENDGRID_API_KEY;
+  if (!sendgridApiKey) {
     throw new Error('SENDGRID_API_KEY and EMAIL_USER must be set in .env');
   }
 
